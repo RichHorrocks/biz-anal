@@ -1,4 +1,5 @@
 import { UserButton } from "@clerk/nextjs";
+import { SearchSection } from "./_components/search-section";
 
 export default function DashboardPage() {
   return (
@@ -7,8 +8,14 @@ export default function DashboardPage() {
         <h1 className="text-xl font-semibold text-gray-900">Biz Anal</h1>
         <UserButton />
       </header>
-      <div className="flex items-center justify-center h-[calc(100vh-65px)]">
-        <p className="text-gray-500">Search coming in M2.</p>
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-900">Find opportunities</h2>
+          <p className="mt-1 text-gray-500 text-sm">
+            Search for a business type and location to surface revenue gaps and service pitches.
+          </p>
+        </div>
+        <SearchSection />
       </div>
     </main>
   );

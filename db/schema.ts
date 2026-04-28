@@ -8,6 +8,7 @@ import {
   uuid,
   index,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 export const searches = pgTable("searches", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -18,6 +19,10 @@ export const searches = pgTable("searches", {
   radius: integer("radius").default(5000),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const searchesRelations = relations(searches, ({ many }) => ({
+  businesses: many(businesses),
+}));
 
 export const businesses = pgTable(
   "businesses",
@@ -42,6 +47,13 @@ export const businesses = pgTable(
   (t) => [index("businesses_place_id_idx").on(t.placeId)]
 );
 
+export const businessesRelations = relations(businesses, ({ one, many }) => ({
+  search: one(searches, { fields: [businesses.searchId], references: [searches.id] }),
+  competitorContexts: many(competitorContexts),
+  signals: many(signals),
+  opportunityScores: many(opportunityScores),
+}));
+
 export const competitorContexts = pgTable("competitor_contexts", {
   id: uuid("id").primaryKey().defaultRandom(),
   businessId: uuid("business_id")
@@ -54,6 +66,13 @@ export const competitorContexts = pgTable("competitor_contexts", {
   topCompetitorsJson: jsonb("top_competitors_json"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const competitorContextsRelations = relations(competitorContexts, ({ one }) => ({
+  business: one(businesses, {
+    fields: [competitorContexts.businessId],
+    references: [businesses.id],
+  }),
+}));
 
 export const signals = pgTable(
   "signals",
@@ -72,6 +91,10 @@ export const signals = pgTable(
   (t) => [index("signals_business_id_idx").on(t.businessId)]
 );
 
+export const signalsRelations = relations(signals, ({ one }) => ({
+  business: one(businesses, { fields: [signals.businessId], references: [businesses.id] }),
+}));
+
 export const opportunityScores = pgTable("opportunity_scores", {
   id: uuid("id").primaryKey().defaultRandom(),
   businessId: uuid("business_id")
@@ -84,3 +107,10 @@ export const opportunityScores = pgTable("opportunity_scores", {
   generatedPitch: text("generated_pitch"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const opportunityScoresRelations = relations(opportunityScores, ({ one }) => ({
+  business: one(businesses, {
+    fields: [opportunityScores.businessId],
+    references: [businesses.id],
+  }),
+}));
